@@ -4,3 +4,5 @@ screenPrice,
 rollback,
 fullPrice,
 adaptive;
+
+alert("Hello world!");
