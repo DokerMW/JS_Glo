@@ -6,3 +6,5 @@ fullPrice,
 adaptive;
 
 alert("Hello world!");
+
+console.log("Hello console!");
