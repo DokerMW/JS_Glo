@@ -77,6 +77,16 @@ namePerson == 'Артем'
 	? console.log('Преподаватель') 
 	: console.log('Студент');
 
+//Сложное задание №4
 
+const checkOnString = (param) => {
+	if(typeof param != 'string'){
+		return 'Это не строка!'
+	}
+	if(param.length > 30) {
+		param = param.substring(0, 30) + '...';
+	}
+	return param.trim()
+}
 
-
+console.log(checkOnString('Lorem ipsum dolor sit amet consectetur'));

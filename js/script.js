@@ -8,33 +8,50 @@ const servise2 = prompt('Какой дополнительный тип услу
 const servisePrice2 = +prompt('Сколько это будет стоить?');
 const fullPrice = screenPrice + servisePrice1 + servisePrice2;
 const rollback = fullPrice * (15 / 100);
-const servicePercentPrice = Math.ceil(fullPrice - rollback);
 
-switch (true){
-	case 0 <= fullPrice && fullPrice <= 15000:
-		console.log('Скидка не предусмотрена!');
-		break;
-	case 15000 < fullPrice && fullPrice < 30000:
-		console.log('Скидка 5%!');
-		break;
-	case fullPrice > 30000:
-		console.log('Скидка 10%!');
-		break;
-	case fullPrice < 0:
-		console.log('Что то пошло не так');
-		break;
+const getAllServicePrices = function(price1, price2){
+	return price1 + price2;
 }
 
-console.log(typeof title);
-console.log(typeof fullPrice);
-console.log(typeof adaptive);
-console.log(screens.length);
-console.log(`Стоимость верстки экранов ${screenPrice} рублей`);
-console.log(`Стоимость разработки сайта ${fullPrice} рублей`);
+function getFullPrice(price1, price2){
+	return price1 + price2;
+}
+
+function getTitle(titleVar){
+	return titleVar.trim().charAt(0).toUpperCase() + titleVar.slice(1).toLowerCase();
+}
+
+const getServicePercentPrices = (price, back) => {
+	return price - back;
+}
+
+const showTypeOf = (item) => {
+	console.log(item, typeof item);
+}
+
+const getRollbackMessage = (price) => {
+	switch (true){
+		case 0 <= price && price <= 15000:
+			return 'Скидка не предусмотрена!';
+		case 15000 < price && price < 30000:
+			return 'Скидка 5%!';
+		case price > 30000:
+			return 'Скидка 10%!';
+		case price < 0:
+			return 'Что то пошло не так';
+	}
+}
+
+const allServicePrices = getAllServicePrices(servisePrice1, servisePrice2);
+const servicePercentPrice = Math.ceil(getServicePercentPrices(fullPrice, rollback));
+
+getRollbackMessage(fullPrice)
+getFullPrice(screenPrice, allServicePrices);
+
+showTypeOf(title)
+showTypeOf(fullPrice)
+showTypeOf(adaptive)
+
+
 console.log(screens);
-console.log(`Откат ${rollback}`);
-console.log(`Стоимость с вычетом отката ${servicePercentPrice}`);
 
-alert('Hello world!');
-
-console.log('Hello console!');
