@@ -3,7 +3,7 @@ const appData = {
 	screens: '',
 	screenPrice: 0,
 	adaptive: true,
-	rollback: 15,
+	rollback: 0,
 	allServicePrices: 0,
 	fullPrice: 0,
 	servicePercentPrice: 0,
@@ -51,36 +51,35 @@ const appData = {
 	getTitle: function () {
 		return appData.title.trim()[0].toUpperCase() + appData.title.trim().substr(1).toLowerCase();
 	},
-	getRollbackMessage: (price) => {
+	getRollback: (price) => {
 		switch (true){
 			case 0 <= price && price <= 15000:
-				return 'Скидка не предусмотрена!';
+				return appData.rollback = 1;
 			case 15000 < price && price < 30000:
-				return 'Скидка 5%!';
+				return appData.rollback = 5;
 			case price > 30000:
-				return 'Скидка 10%!';
-			case price < 0:
-				return 'Что то пошло не так';
+				return appData.rollback = 10;
 		}
 	},
 	start: () => {
 		appData.asking();
 		appData.allServicePrices = appData.getAllServicePrices();
 		appData.fullPrice = appData.getFullPrice();
+		appData.getRollback(appData.fullPrice);
 		appData.servicePercentPrice = appData.getServicePercentPrice();
 		appData.title = appData.getTitle();
+		appData.logger();
 	},
 	logger: () => {
 		console.log(`Название проекта: ${appData.title}`);
 		console.log(`Какие экраны нужны: ${appData.screens}`);
-		
+		console.log(`Стоимость верстки: ${appData.screenPrice}`);
+		console.log(`Стоимость дополнительных услуг: ${appData.allServicePrices}`);
+		console.log(`Общая стоимость: ${appData.fullPrice}`);
+		console.log(`Скидка: ${appData.rollback}%`);
+		console.log(`Итоговая стоимость со скидкой: ${appData.servicePercentPrice}`);
 	}
 }
 
 appData.start();
-
-console.log(appData.fullPrice);
-console.log(appData.servicePercentPrice);
-
-
 
