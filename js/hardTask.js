@@ -1,36 +1,22 @@
-//Сложное задание №5
+//Сложное задание №7
 
-//Вывести из массива в консоль числа начинающиеся на 2 или 4
-const arr = ['12', '243', '35', '28', '124', '439', '55'];
+const date = new Date();
+const numberDay = date.getDay();
 
-arr.forEach(e => {
-	if (e[0] == '2' || e[0] == '4' ){
-		console.log(`Число из массива начинающееся на 2 или 4: ${e}`);
+const week = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
+
+week.forEach((item, index) => {
+	const div = document.createElement('div');
+	div.innerHTML = item;
+	document.body.append(div);
+
+	if (item == 'Суббота' || item == 'Воскресенье'){
+		div.style.fontStyle = "italic";
+		console.log(`%c${item}`, 'font-style: italic');
+	}else if(index == numberDay - 1 ){
+		div.style.fontWeight = "bold";
+		console.log(`%c${item}`, 'font-weight: bold');
+	} else {
+		console.log(item);
 	}
 });
-
-//Вывести в консоль простые числа в диапазоне от 0 до 100
-function findPrimeNumber(num) {
-	if (num === 1){
-		return false;
-	}
-
-	for (let i = 2; i < num; i++) {
-		if (num % i === 0) {
-			return false;
-		}
-	}
-	
-	return true;
-}
-
-function consoleNumbers(max) {
-	for (let i = 1; i <= max; i++) {
-			if (findPrimeNumber(i)) {
-			console.log(`Делители числа ${i} это: 1 и ${i}`);
-			}
-	}
-}
-
-consoleNumbers(100);
-
