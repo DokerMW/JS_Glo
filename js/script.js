@@ -1,78 +1,99 @@
 const appData = {
 	title: '',
-	screens: '',
+	screens: [],
 	screenPrice: 0,
 	adaptive: true,
 	rollback: 0,
 	allServicePrices: 0,
 	fullPrice: 0,
 	servicePercentPrice: 0,
-	service1: '',
-	service2: '',
+	services: {},
+	stringValidate: function(value){
+		if(!(/[a-zA-Zа-яА-Я]/).test(value) || value == null || value == ""){
+			return false;
+		} 
+		return true;
+	},
 	asking: function () {
-		appData.title = prompt("Как называется ваш проект?");
-		appData.screens = prompt("Какие типы экранов нужно разработать?").toLowerCase().split(/[\s,]+/);
-	
 		do {
-			appData.screenPrice = prompt("Сколько будет стоить данная работа?");
-		} while (!appData.isNumber(appData.screenPrice))
-	
-		appData.adaptive = confirm("Нужен ли адаптив на сайте?");
-	},
-	isNumber: function (num) {
-		return !isNaN(parseFloat(num)) && isFinite(num) && /^\S+$/.test(num);
-	},
-	getAllServicePrices: function () {
-		let sum = 0;
-	
+			appData.title = prompt("Как называется ваш проект?");
+		} while (!appData.stringValidate(appData.title));
+		
 		for (let i = 0; i < 2; i++){
+			let name;
 			let price = 0;
-	
-			if (i === 0){
-				appData.service1 = prompt("Какой дополнительный тип услуги нужен?");
-			} else if (i === 1){
-				appData.service2 = prompt("Какой дополнительный тип услуги нужен?");
-			}
+
+			do {
+				 name = prompt("Какие типы экранов нужно разработать?");
+			} while (!appData.stringValidate(name));
+
+			do {
+				price = prompt("Сколько будет стоить данная работа?");
+			} while (!appData.isNumber(price));
+
+			appData.screens.push({id: i, name, price});
+		}
+
+		for (let i = 0; i < 2; i++){
+			let name;
+			let price = 0;
+
+			do {
+				name = prompt("Какой дополнительный тип услуги нужен?");
+		 } while (!appData.stringValidate(name));
 			
 			do {
 				price = prompt("Сколько это будет стоить?");
 			} while (!appData.isNumber(price));
 	
-			sum += +price;
+			appData.services[i] = {name, price: +price};
 		}
-		return sum;
+	
+		appData.adaptive = confirm("Нужен ли адаптив на сайте?");
+	},
+	addPrices: function(){
+		appData.screenPrice = appData.screens.reduce((acc, i) => acc + +i.price, 0);
+		
+		for (let key in appData.services){
+			appData.allServicePrices += appData.services[key]['price'];
+		}
+	},
+	isNumber: function (num) {
+		return !isNaN(parseFloat(num)) && isFinite(num) && /^\S+$/.test(num);
 	},
 	getFullPrice: function () {
-		return +appData.screenPrice + appData.allServicePrices;
+		appData.fullPrice = +appData.screenPrice + appData.allServicePrices;
 	},
 	getServicePercentPrice: function () {
-		return appData.fullPrice - (appData.fullPrice * (appData.rollback / 100));
+		appData.servicePercentPrice = appData.fullPrice - (appData.fullPrice * (appData.rollback / 100));
 	},
 	getTitle: function () {
-		return appData.title.trim()[0].toUpperCase() + appData.title.trim().substr(1).toLowerCase();
+		appData.title = appData.title.trim()[0].toUpperCase() + appData.title.trim().substr(1).toLowerCase();
 	},
 	getRollback: (price) => {
 		switch (true){
 			case 0 <= price && price <= 15000:
-				return appData.rollback = 1;
+				return appData.rollback = 0;
 			case 15000 < price && price < 30000:
 				return appData.rollback = 5;
 			case price > 30000:
 				return appData.rollback = 10;
 		}
 	},
+	
 	start: () => {
 		appData.asking();
-		appData.allServicePrices = appData.getAllServicePrices();
-		appData.fullPrice = appData.getFullPrice();
+		appData.addPrices();
+		appData.getFullPrice();
 		appData.getRollback(appData.fullPrice);
-		appData.servicePercentPrice = appData.getServicePercentPrice();
-		appData.title = appData.getTitle();
+		appData.getServicePercentPrice();
+		appData.getTitle();
 		appData.logger();
 	},
 	logger: () => {
 		console.log(`Название проекта: ${appData.title}`);
-		console.log(`Какие экраны нужны: ${appData.screens}`);
+		console.log(appData.screens);
+		console.log(appData.services);
 		console.log(`Стоимость верстки: ${appData.screenPrice}`);
 		console.log(`Стоимость дополнительных услуг: ${appData.allServicePrices}`);
 		console.log(`Общая стоимость: ${appData.fullPrice}`);
@@ -82,4 +103,8 @@ const appData = {
 }
 
 appData.start();
+
+
+
+
 
