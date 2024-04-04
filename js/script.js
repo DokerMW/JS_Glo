@@ -1,3 +1,19 @@
+const title = document.getElementsByTagName('h1')[0];
+const calcBtn = document.getElementsByClassName('handler_btn')[0];
+const resetBtn = document.getElementsByClassName('handler_btn')[1];
+const addBtn = document.querySelector('.screen-btn');
+const percentItems = document.querySelectorAll('.other-items.percent');
+const numberItems = document.querySelectorAll('.other-items.number');
+const inputRange = document.querySelector('.rollback input[type="range"]');
+const rangeValue = document.querySelector('.rollback .range-value');
+const inputTotal = document.getElementsByClassName('total-input')[0];
+const inputTotalCount = document.getElementsByClassName('total-input')[1];
+const inputTotalOther = document.getElementsByClassName('total-input')[2];
+const inputFullCount = document.getElementsByClassName('total-input')[3];
+const inputCountRollback = document.getElementsByClassName('total-input')[4];
+let screenBlock = document.querySelectorAll('.screen');
+
+
 const appData = {
 	title: '',
 	screens: [],
