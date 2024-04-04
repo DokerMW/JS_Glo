@@ -1,12 +1,26 @@
-//Сложное задание №9
+	//Сложное задание №9
+
+function clockRefresh() {
 
 const fullDate = new Date();
-const numberDay = fullDate.getDay();
-const dateOfMonth = fullDate.getDate();
+const dayOfWeek = fullDate.getDay();
+const numberOfMonth = fullDate.getMonth() + 1;
+const dayOfMonth = fullDate.getDate();
+const year = fullDate.getFullYear();
+const hours = fullDate.getHours();
+const minutes = fullDate.getMinutes();
+const seconds = fullDate.getSeconds();
 
-const week = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+const week = [
+ 'Воскресенье',
+ 'Понедельник',
+ 'Вторник',
+ 'Среда',
+ 'Четверг',
+ 'Пятница',
+ 'Суббота'
+];
 const monts = [
- 'Декабря',
  'Января',
  'Февраля',
  'Марта',
@@ -17,7 +31,8 @@ const monts = [
  'Августа',
  'Сентября',
  'Октября',
- 'Ноября'
+ 'Ноября',
+ 'Декабрь'
 ];
 
 const changeEnding = (digit, endingOne, endingTwo, endingThree) =>{
@@ -33,13 +48,22 @@ const changeEnding = (digit, endingOne, endingTwo, endingThree) =>{
 	}
 }
 
-const printFullDate = `Сегодня ${week[numberDay]}, ${dateOfMonth} ${monts[dateOfMonth]} ${fullDate.getFullYear()} года, ${fullDate.getHours()} ${changeEnding(fullDate.getHours(), 'час', 'часа', 'часов')} ${fullDate.getMinutes()} ${changeEnding(fullDate.getMinutes(), 'минута', 'минуты', 'минут')} ${fullDate.getSeconds()} ${changeEnding(fullDate.getSeconds(), 'секунда', 'секунды', 'секунд')}`;
+const addZero = (digit) => {
+	if ((digit + '').length == 1){
+		return digit = '0' + digit;
+	}
+	return digit
+}
 
-const printShortDate = `${fullDate.toISOString().split('T')[0]} - ${fullDate.toISOString().split('T')[1].slice(0, -5)}`;
+const printFullDate = `Сегодня ${week[dayOfWeek]}, ${dayOfMonth} ${monts[numberOfMonth]} ${year} года, ${hours} ${changeEnding(hours, 'час', 'часа', 'часов')} ${minutes} ${changeEnding(minutes, 'минута', 'минуты', 'минут')} ${seconds} ${changeEnding(seconds, 'секунда', 'секунды', 'секунд')}`;
 
-const div = document.createElement('div');
-const divTwo = document.createElement('div');
-	div.innerHTML = printFullDate;
-	divTwo.innerHTML = printShortDate;
-	document.body.append(div);
-	document.body.append(divTwo);
+const printShortDate = `${addZero(dayOfMonth)}.${addZero(numberOfMonth)}.${year}-${addZero(hours)}:${addZero(minutes)}:${addZero(seconds)}`;
+
+const div = document.querySelector('.full-time');
+const divTwo = document.querySelector('.short-time');
+
+div.innerHTML = printFullDate;
+divTwo.innerHTML = printShortDate;
+}
+
+setInterval(clockRefresh, 1000);
