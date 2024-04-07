@@ -13,114 +13,147 @@ const inputFullCount = document.getElementsByClassName('total-input')[3];
 const inputCountRollback = document.getElementsByClassName('total-input')[4];
 let screenBlock = document.querySelectorAll('.screen');
 
-
 const appData = {
 	title: '',
 	screens: [],
 	screenPrice: 0,
 	adaptive: true,
 	rollback: 0,
-	allServicePrices: 0,
+	servicePricesPercent: 0,
+	servicePricesNumber: 0,
 	fullPrice: 0,
 	servicePercentPrice: 0,
-	services: {},
-	stringValidate: function(value){
-		if(!(/[a-zA-Zа-яА-Я]/).test(value) || value == null || value == ""){
-			return false;
-		} 
-		return true;
+	servicesPercent: {},
+	servicesNumber: {},
+	screensCount: 0,
+	addtitle: () =>{
+		document.title = title.textContent;
 	},
-	asking: function () {
-		do {
-			appData.title = prompt("Как называется ваш проект?");
-		} while (!appData.stringValidate(appData.title));
-		
-		for (let i = 0; i < 2; i++){
-			let name;
-			let price = 0;
+	addScreens: () => {
+		screenBlock = document.querySelectorAll('.screen');
 
-			do {
-				 name = prompt("Какие типы экранов нужно разработать?");
-			} while (!appData.stringValidate(name));
+		screenBlock.forEach((e, i) =>{
+			const select = e.querySelector('select');
+			const input = e.querySelector('input');
+			const selectName = select.options[select.selectedIndex].textContent;
 
-			do {
-				price = prompt("Сколько будет стоить данная работа?");
-			} while (!appData.isNumber(price));
+			appData.screens.push({
+				id: i,
+				name: selectName, 
+				price: +select.value * +input.value,
+				count: input.value
+			});
+		})
+	},
+	addScreenBlock: () => {
+		const cloneScreen = screenBlock[0].cloneNode(true);
 
-			appData.screens.push({id: i, name, price});
-		}
+		screenBlock[screenBlock.length - 1].after(cloneScreen);
+	},
+	addServices: () => {
+		percentItems.forEach(e => {
+			const check = e.querySelector('input[type=checkbox]');
+			const label = e.querySelector('label');
+			const input = e.querySelector('input[type=text]');
 
-		for (let i = 0; i < 2; i++){
-			let name;
-			let price = 0;
+			if(check.checked){
+				appData.servicesPercent[label.textContent] = +input.value;
+			}
+		});
 
-			do {
-				name = prompt("Какой дополнительный тип услуги нужен?");
-		 } while (!appData.stringValidate(name));
-			
-			do {
-				price = prompt("Сколько это будет стоить?");
-			} while (!appData.isNumber(price));
-	
-			appData.services[i] = {name, price: +price};
-		}
-	
-		appData.adaptive = confirm("Нужен ли адаптив на сайте?");
+		numberItems.forEach(e => {
+			const check = e.querySelector('input[type=checkbox]');
+			const label = e.querySelector('label');
+			const input = e.querySelector('input[type=text]');
+
+			if(check.checked){
+				appData.servicesNumber[label.textContent] = +input.value;
+			}
+		});
 	},
 	addPrices: function(){
-		appData.screenPrice = appData.screens.reduce((acc, i) => acc + +i.price, 0);
-		
-		for (let key in appData.services){
-			appData.allServicePrices += appData.services[key]['price'];
+		for(let screen of appData.screens){
+			appData.screenPrice += +screen.price;
+			appData.screensCount += +screen.count;
 		}
-	},
-	isNumber: function (num) {
-		return !isNaN(parseFloat(num)) && isFinite(num) && /^\S+$/.test(num);
-	},
-	getFullPrice: function () {
-		appData.fullPrice = +appData.screenPrice + appData.allServicePrices;
-	},
-	getServicePercentPrice: function () {
+
+		for (let key in appData.servicesNumber){
+			appData.servicePricesNumber += appData.servicesNumber[key];
+		}
+
+		for (let key in appData.servicesPercent){
+			appData.servicePricesPercent += appData.screenPrice * (appData.servicesPercent[key] / 100);
+		}
+		
+		appData.fullPrice = +appData.screenPrice + +appData.servicePricesNumber + +appData.servicePricesPercent;
 		appData.servicePercentPrice = appData.fullPrice - (appData.fullPrice * (appData.rollback / 100));
 	},
-	getTitle: function () {
-		appData.title = appData.title.trim()[0].toUpperCase() + appData.title.trim().substr(1).toLowerCase();
+	showResult: () => {
+		inputTotal.value = appData.screenPrice;
+		inputTotalOther.value = appData.servicePricesPercent + appData.servicePricesNumber;
+		inputFullCount.value = appData.fullPrice;
+		inputCountRollback.value =  appData.servicePercentPrice;
+		inputTotalCount.value = appData.screensCount;
 	},
-	getRollback: (price) => {
-		switch (true){
-			case 0 <= price && price <= 15000:
-				return appData.rollback = 0;
-			case 15000 < price && price < 30000:
-				return appData.rollback = 5;
-			case price > 30000:
-				return appData.rollback = 10;
-		}
+	getRollback: () => {
+		inputRange.addEventListener('input', () => {
+			rangeValue.textContent = inputRange.value;
+			appData.rollback = inputRange.value;
+		});
 	},
-	
 	start: () => {
-		appData.asking();
+		appData.addScreens();
+		appData.addServices();
 		appData.addPrices();
-		appData.getFullPrice();
-		appData.getRollback(appData.fullPrice);
-		appData.getServicePercentPrice();
-		appData.getTitle();
-		appData.logger();
+		appData.showResult();
+		appData.clearValues();
+		// appData.logger();
+	},
+	checkNullSelect: () => {
+		screenBlock = document.querySelectorAll('.screen');
+      const selectValues = [];
+			let input;
+			screenBlock.forEach(e => {
+				const select = e.querySelector('select');
+				const indexSelected = select.selectedIndex;
+				const option = select.querySelectorAll('option')[indexSelected];
+				input = e.querySelector('input');
+				selectValues.push(option.value);
+				selectValues.push(+input.value);
+			})
+			if (!selectValues.some(t => !t)){
+				appData.start();
+			} else{
+				alert('Не указан тип экрана или количество!')
+			}
+	},
+	clearValues: () => {
+		appData.screens = [];
+		appData.screenPrice = 0;
+		appData.screensCount = 0;
+		appData.servicePricesPercent = 0;
+		appData.servicePricesNumber = 0;
+		appData.fullPrice = 0;
+		appData.servicePercentPrice = 0;
+	},
+	init: () =>{
+		appData.addtitle();
+		appData.getRollback();
+		calcBtn.addEventListener('click', appData.checkNullSelect);
+		addBtn.addEventListener('click', appData.addScreenBlock);
 	},
 	logger: () => {
 		console.log(`Название проекта: ${appData.title}`);
 		console.log(appData.screens);
 		console.log(appData.services);
 		console.log(`Стоимость верстки: ${appData.screenPrice}`);
-		console.log(`Стоимость дополнительных услуг: ${appData.allServicePrices}`);
+		console.log(`Стоимость адаптива: ${appData.servicePercentPrice}`);
+		console.log(`Стоимость допов: ${appData.servicePricesNumber}`);
 		console.log(`Общая стоимость: ${appData.fullPrice}`);
 		console.log(`Скидка: ${appData.rollback}%`);
 		console.log(`Итоговая стоимость со скидкой: ${appData.servicePercentPrice}`);
 	}
 }
 
-appData.start();
-
-
-
-
+appData.init();
 
