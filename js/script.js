@@ -1,3 +1,5 @@
+'use strict'
+
 const title = document.getElementsByTagName('h1')[0];
 const calcBtn = document.getElementsByClassName('handler_btn')[0];
 const resetBtn = document.getElementsByClassName('handler_btn')[1];
@@ -106,8 +108,8 @@ const appData = {
 		appData.addServices();
 		appData.addPrices();
 		appData.showResult();
+		appData.logger();
 		appData.clearValues();
-		// appData.logger();
 	},
 	checkNullSelect: function() {
 		screenBlock = document.querySelectorAll('.screen');
@@ -143,15 +145,15 @@ const appData = {
 		addBtn.addEventListener('click', appData.addScreenBlock);
 	},
 	logger: function() {
-		console.log(`Название проекта: ${appData.title}`);
+		// console.log(`Название проекта: ${appData.title}`);
 		console.log(appData.screens);
-		console.log(appData.services);
-		console.log(`Стоимость верстки: ${appData.screenPrice}`);
-		console.log(`Стоимость адаптива: ${appData.servicePercentPrice}`);
-		console.log(`Стоимость допов: ${appData.servicePricesNumber}`);
-		console.log(`Общая стоимость: ${appData.fullPrice}`);
-		console.log(`Скидка: ${appData.rollback}%`);
-		console.log(`Итоговая стоимость со скидкой: ${appData.servicePercentPrice}`);
+		// console.log(appData.services);
+		// console.log(`Стоимость верстки: ${appData.screenPrice}`);
+		// console.log(`Стоимость адаптива: ${appData.servicePercentPrice}`);
+		// console.log(`Стоимость допов: ${appData.servicePricesNumber}`);
+		// console.log(`Общая стоимость: ${appData.fullPrice}`);
+		// console.log(`Скидка: ${appData.rollback}%`);
+		// console.log(`Итоговая стоимость со скидкой: ${appData.servicePercentPrice}`);
 	}
 }
 
