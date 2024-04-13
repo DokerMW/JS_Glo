@@ -13,8 +13,10 @@ const inputTotalCount = document.getElementsByClassName('total-input')[1];
 const inputTotalOther = document.getElementsByClassName('total-input')[2];
 const inputFullCount = document.getElementsByClassName('total-input')[3];
 const inputCountRollback = document.getElementsByClassName('total-input')[4];
+let controlInputs = document.querySelectorAll('.main-controls input[type="text"]');
+let controlSelects = document.querySelectorAll('.main-controls select');
 let screenBlock = document.querySelectorAll('.screen');
-
+let screenBlockParent = document.querySelector('.element_screens');
 
 const appData = {
 	title: '',
@@ -29,11 +31,11 @@ const appData = {
 	servicesPercent: {},
 	servicesNumber: {},
 	screensCount: 0,
-
 	addtitle: function(){
 		document.title = title.textContent;
 	},
 	addScreens: function(){
+
 		screenBlock = document.querySelectorAll('.screen');
 
 		screenBlock.forEach((e, i) =>{
@@ -47,12 +49,16 @@ const appData = {
 				price: +select.value * +input.value,
 				count: input.value
 			});
-		})
+		});
+		
 	},
 	addScreenBlock: function(){
+
+		
 		const cloneScreen = screenBlock[0].cloneNode(true);
 
 		screenBlock[screenBlock.length - 1].after(cloneScreen);
+
 	},
 	addServices: function(){
 		percentItems.forEach(e => {
@@ -110,11 +116,13 @@ const appData = {
 		this.addServices();
 		this.addPrices();
 		this.showResult();
-		this.logger();
+		// this.logger();
 		this.clearValues();
 	},
 	checkNullSelect: function() {
 		screenBlock = document.querySelectorAll('.screen');
+		controlInputs = document.querySelectorAll('.main-controls input[type="text"]');
+		controlSelects = document.querySelectorAll('.main-controls select');
       const selectValues = [];
 			let input;
 			screenBlock.forEach(e => {
@@ -128,6 +136,10 @@ const appData = {
 			
 			if (!selectValues.some(t => !t)){
 				this.start();
+				calcBtn.style.display = 'none';
+				resetBtn.style.display = 'block';
+				controlInputs.forEach(e => e.setAttribute("disabled", ""))
+				controlSelects.forEach(e => e.setAttribute("disabled", ""))
 			} else{
 				alert('Не указан тип экрана или количество!')
 			}
@@ -141,11 +153,39 @@ const appData = {
 		this.fullPrice = 0;
 		this.servicePercentPrice = 0;
 	},
+	reset:function(){
+		controlInputs.forEach(e => e.removeAttribute("disabled", ""))
+		controlSelects.forEach(e => e.removeAttribute("disabled", ""))
+		calcBtn.style.display = 'block';
+		resetBtn.style.display = 'none';
+		this.clearValues();
+		this.showResult();
+		screenBlockParent.innerHTML = `<h3>Расчет по типу экрана</h3>
+		<div class="main-controls__item screen">
+				<div class="main-controls__select">
+						<select name="views-select">
+								<option value="" selected>Тип экранов</option>
+								<option value="500">Простых 500руб * n</option>
+								<option value="700">Сложных 700руб * n</option>
+								<option value="800">Интерактивных 800руб * n</option>
+								<option value="100">Форм 100руб * n</option>
+								<option value="300">Слайдеров 300руб * n</option>
+								<option value="200">Модальные окна 200руб * n</option>
+								<option value="100">Анимация в блоках 100руб * n</option>
+						</select>
+				</div>
+				<div class="main-controls__input">
+						<input type="text" placeholder="Количество экранов">
+				</div>
+		</div>
+		<button class="screen-btn">+</button>`;
+	},
 	init: function(){
 		this.addtitle();
 		this.getRollback();
 		calcBtn.addEventListener('click', this.checkNullSelect.bind(this), false);
-		addBtn.addEventListener('click', this.addScreenBlock);
+		addBtn.addEventListener('click', this.addScreenBlock.bind(this), false);
+		resetBtn.addEventListener('click', this.reset.bind(this), false);
 	},
 	logger: function() {
 		// console.log(`Название проекта: ${this.title}`);
@@ -161,4 +201,3 @@ const appData = {
 }
 
 appData.init();
-
