@@ -13,10 +13,14 @@ const inputTotalCount = document.getElementsByClassName('total-input')[1];
 const inputTotalOther = document.getElementsByClassName('total-input')[2];
 const inputFullCount = document.getElementsByClassName('total-input')[3];
 const inputCountRollback = document.getElementsByClassName('total-input')[4];
+const cmsCheckBox = document.querySelector('#cms-open');
+const cmsVariants = document.querySelector('.hidden-cms-variants');
+const cmsOptions = cmsVariants.querySelector('#cms-select').options;
+const cmsSelect = cmsVariants.querySelector('#cms-select');
+const cmsOtherInput = cmsVariants.querySelector('.main-controls__input');
 let controlInputs = document.querySelectorAll('.main-controls input[type="text"]');
 let controlSelects = document.querySelectorAll('.main-controls select');
 let screenBlock = document.querySelectorAll('.screen');
-let screenBlockParent = document.querySelector('.element_screens');
 
 const appData = {
 	title: '',
@@ -30,13 +34,14 @@ const appData = {
 	servicePercentPrice: 0,
 	servicesPercent: {},
 	servicesNumber: {},
+	cmsPercent: 0,
+	cmsPrice: 0,
 	screensCount: 0,
 	addedScreens: [],
 	addtitle: function(){
 		document.title = title.textContent;
 	},
 	addScreens: function(){
-
 		screenBlock = document.querySelectorAll('.screen');
 
 		screenBlock.forEach((e, i) =>{
@@ -95,12 +100,13 @@ const appData = {
 			this.servicePricesPercent += this.screenPrice * (this.servicesPercent[key] / 100);
 		}
 		
-		this.fullPrice = +this.screenPrice + +this.servicePricesNumber + +this.servicePricesPercent;
+		this.cmsPrice =  this.screenPrice * (this.cmsPercent / 100);
+		this.fullPrice = +this.screenPrice + +this.servicePricesNumber + +this.servicePricesPercent + +this.cmsPrice;
 		this.servicePercentPrice = this.fullPrice - (this.fullPrice * (this.rollback / 100));
 	},
 	showResult: function() {
 		inputTotal.value = this.screenPrice;
-		inputTotalOther.value = this.servicePricesPercent + this.servicePricesNumber;
+		inputTotalOther.value = this.servicePricesPercent + this.servicePricesNumber + this.cmsPrice;
 		inputFullCount.value = this.fullPrice;
 		inputCountRollback.value =  this.servicePercentPrice;
 		inputTotalCount.value = this.screensCount;
@@ -123,30 +129,36 @@ const appData = {
 		screenBlock = document.querySelectorAll('.screen');
 		controlInputs = document.querySelectorAll('.main-controls input[type="text"]');
 		controlSelects = document.querySelectorAll('.main-controls select');
-      const selectValues = [];
-			let input;
-			screenBlock.forEach(e => {
-				const select = e.querySelector('select');
-				const indexSelected = select.selectedIndex;
-				const option = select.querySelectorAll('option')[indexSelected];
-				input = e.querySelector('input');
-				selectValues.push(option.value);
-				selectValues.push(+input.value);
+
+		const selectValues = [];
+		let input;
+		screenBlock.forEach(e => {
+			const select = e.querySelector('select');
+			const indexSelected = select.selectedIndex;
+			const option = select.querySelectorAll('option')[indexSelected];
+			input = e.querySelector('input');
+			selectValues.push(option.value);
+			selectValues.push(+input.value);
+		})
+		if (cmsOtherInput.querySelector('input').value != false){
+			this.cmsPercent = +cmsOtherInput.querySelector('input').value;
+		}
+
+		if (!selectValues.some(t => !t)){
+			this.start();
+			calcBtn.style.display = 'none';
+			resetBtn.style.display = 'block';
+			controlInputs.forEach(e => e.setAttribute("disabled", ""))
+			controlSelects.forEach(e => e.setAttribute("disabled", ""))
+		} else{
+			controlInputs.forEach(e => {
+				if(!e.value){
+					e.placeholder = 'Не выбрано значение!'
+				}
 			})
-			
-			if (!selectValues.some(t => !t)){
-				this.start();
-				calcBtn.style.display = 'none';
-				resetBtn.style.display = 'block';
-				controlInputs.forEach(e => e.setAttribute("disabled", ""))
-				controlSelects.forEach(e => e.setAttribute("disabled", ""))
-			} else{
-				controlInputs.forEach(e => {
-					if(!e.value){
-						e.placeholder = 'Не выбрано значение!'
-					}
-				})
-			}
+		}
+
+	
 	},
 	clearValues: function(){
 		this.screens = [];
@@ -162,6 +174,8 @@ const appData = {
 		controlSelects.forEach(e => e.removeAttribute("disabled", ""))
 		calcBtn.style.display = 'block';
 		resetBtn.style.display = 'none';
+		cmsVariants.style.display = 'none';
+		cmsCheckBox.removeAttribute('checked');
 		this.clearValues();
 		this.showResult();
 		screenBlock.forEach((e, i) => {
@@ -174,6 +188,31 @@ const appData = {
 				input.value = '0'
 			}
 		})
+
+	},
+	cmsOpen: function(){
+		if(cmsCheckBox.checked){
+			cmsVariants.style.display = 'flex';
+		} else {
+			cmsVariants.style.display = 'none';
+			cmsVariants.querySelector('#cms-select').selectedIndex = 0;
+		}
+
+	},
+	cmsOther: function(){
+		const optionsArr = [...cmsOptions];
+
+		optionsArr.forEach(e => {
+				if(e.selected && e.value == 'other'){
+					cmsOtherInput.style.display = 'flex'
+				} else if(e.selected && typeof +e.value == 'number'){
+					this.cmsPercent = +e.value;
+				}else {
+					cmsOtherInput.style.display = 'none'
+				}
+			
+			})	
+			
 	},
 	init: function(){
 		this.addtitle();
@@ -181,6 +220,8 @@ const appData = {
 		calcBtn.addEventListener('click', this.checkNullSelect.bind(this), false);
 		addBtn.addEventListener('click', this.addScreenBlock.bind(this), false);
 		resetBtn.addEventListener('click', this.reset.bind(this), false);
+		cmsCheckBox.addEventListener('click', this.cmsOpen.bind(this), false);
+		cmsSelect.addEventListener('change', this.cmsOther.bind(this), false);
 	},
 	logger: function() {
 		// console.log(`Название проекта: ${this.title}`);
