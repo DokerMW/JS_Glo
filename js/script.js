@@ -31,6 +31,7 @@ const appData = {
 	servicesPercent: {},
 	servicesNumber: {},
 	screensCount: 0,
+	addedScreens: [],
 	addtitle: function(){
 		document.title = title.textContent;
 	},
@@ -53,12 +54,11 @@ const appData = {
 		
 	},
 	addScreenBlock: function(){
+		screenBlock = document.querySelectorAll('.screen');
 
-		
 		const cloneScreen = screenBlock[0].cloneNode(true);
 
 		screenBlock[screenBlock.length - 1].after(cloneScreen);
-
 	},
 	addServices: function(){
 		percentItems.forEach(e => {
@@ -141,7 +141,11 @@ const appData = {
 				controlInputs.forEach(e => e.setAttribute("disabled", ""))
 				controlSelects.forEach(e => e.setAttribute("disabled", ""))
 			} else{
-				alert('Не указан тип экрана или количество!')
+				controlInputs.forEach(e => {
+					if(!e.value){
+						e.placeholder = 'Не выбрано значение!'
+					}
+				})
 			}
 	},
 	clearValues: function(){
@@ -160,25 +164,16 @@ const appData = {
 		resetBtn.style.display = 'none';
 		this.clearValues();
 		this.showResult();
-		screenBlockParent.innerHTML = `<h3>Расчет по типу экрана</h3>
-		<div class="main-controls__item screen">
-				<div class="main-controls__select">
-						<select name="views-select">
-								<option value="" selected>Тип экранов</option>
-								<option value="500">Простых 500руб * n</option>
-								<option value="700">Сложных 700руб * n</option>
-								<option value="800">Интерактивных 800руб * n</option>
-								<option value="100">Форм 100руб * n</option>
-								<option value="300">Слайдеров 300руб * n</option>
-								<option value="200">Модальные окна 200руб * n</option>
-								<option value="100">Анимация в блоках 100руб * n</option>
-						</select>
-				</div>
-				<div class="main-controls__input">
-						<input type="text" placeholder="Количество экранов">
-				</div>
-		</div>
-		<button class="screen-btn">+</button>`;
+		screenBlock.forEach((e, i) => {
+			if(i != 0){
+				e.remove()
+			} else {
+				const select = e.querySelector('select');
+				const input = e.querySelector('input');
+				select.selectedIndex = 0;
+				input.value = '0'
+			}
+		})
 	},
 	init: function(){
 		this.addtitle();
